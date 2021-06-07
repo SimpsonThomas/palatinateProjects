@@ -1,73 +1,4 @@
-<script>
-function myFunction() {
-  // Declare variables
-  var input, filter, table, tr, td, i, txtValue;
-  input = document.getElementById("myInput");
-  filter = input.value.toUpperCase();
-  table = document.getElementById("myTable");
-  tr = table.getElementsByTagName("tr");
-
-  // Loop through all table rows, and hide those who don't match the search query
-  for (i = 0; i < tr.length; i++) {
-    td = tr[i].getElementsByTagName("td")[0];
-    if (td) {
-      txtValue = td.textContent || td.innerText;
-      if (txtValue.toUpperCase().indexOf(filter) > -1) {
-        tr[i].style.display = "";
-      } else {
-        tr[i].style.display = "none";
-      }
-    }
-  }
-}
-
-function makeTable () {
-    let lines = []
-    let allText = ''
-    var txtFile = new XMLHttpRequest();
-    txtFile.open("GET", "https://www.palatinate.org.uk/wp-content/uploadedImages/FOI-2018-422.csv", true);
-    txtFile.onreadystatechange = function() {
-      if (txtFile.readyState === 4) {  // Makes sure the document is ready to parse.
-        if (txtFile.status === 200) {  // Makes sure it's found the file.
-          var allText = txtFile.responseText;
-          var lines = txtFile.responseText.split("\n"); // Will separate each line into an array
-          alert(allText);
-        } else {
-            console.log('fail 200')
-        }
-      } else console.log('fail 4')
-    }
-    console.log(allText.responseText)
-    var rows = csv.split('/n')
-    table = document.getElementById('myTable')
-    for (let i = 0; i < rows.length; i++){
-        var row = table.insertRow(0)
-        let cells = rows[i].split(',')
-        for ( let j = 0; j < cells.length; j++) {
-            var cell = row.insertCell(j)
-            cell.innerHTML = cells[j]
-        }
-    }
-}
-
-function readText(filePath) {
-    console.log(filePath)
-    let output = ""
-    if (filePath.files && filePath.files[0]) {
-        reader.onload = function (e) {
-            output = e.target.result;
-            console.log(output)
-            displayContents(output);
-        };//end onload()
-        reader.readAsText(filePath.files[0]);
-    }//end if html5 filelist support
-                else { //this is where you could fallback to Java Applet, Flash or similar
-        return false;
-    }
-    console.log(filePath)
-    return output;
-}
-</script>
+<script src="https://code.jquery.com/jquery-2.1.0.min.js"></script>
 
 <style>
 
@@ -75,15 +6,84 @@ function readText(filePath) {
 
 <html>
 <center>
-    <button onclick="makeTable(readText('www.palatinate.org.uk/wp-content/uploadedImages/FOI-2018-422.csv'))">Fill table</button>
-    <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for names..">
+    <label for="yearSelector">Year:</label>
+
+    <select name="yearSelector" id="yearSelector">
+        <option value="1">First</option>
+        <option value="2">Second</option>
+        <option value="3">Third</option>
+        <option value="4">Fourth</option>
+    </select>
+    <input type="text" id="mySearch" placeholder="Search for modules/subjects..">
     <table id='myTable'>
         <tr class="header">
-            <th style="width:60%;">Name</th>
-            <th style="width:40%;">Country</th>
+            <th style='' id='subject' onClick>Subject</th>
+            <th style=''>meh</th>
+            <th style=''>Title</th>
+            <th style=''>1st</th>
           </tr>
           
+          <tbody id='moduleTableBody'>
+
+          </tbody>
     </table>
 </center>
 </html>
 
+<script>
+    function getFile() {
+        $.get(
+        'https://www.palatinate.org.uk/wp-content/uploadedImages/FOI-2018-422.csv',
+        function(data) {
+            //console.log(data)
+            let rows = data.split('\n')
+            //console.log(rows)
+            for (let i = 3; i < rows.length; i++) {
+                $('#testing').html(data)
+                cells = rows[i].split(',')
+                let markup =  "<tr id='"+cells[0]+'-'+cells[1]+"'><td>"+cells[0]+"</td><td>"+cells[1]+"</td><td>"+cells[2]+"</td><td>"+cells[6]+"</td></tr>"
+                $('#moduleTableBody').append(markup)
+            }
+        })
+    }
+
+    function comparer(index) {
+        return function(a, b) {
+            var valA = getCellValue(a, index), valB = getCellValue(b, index)
+            return $.isNumeric(valA) && $.isNumeric(valB) ? valA - valB : valA.toString().localeCompare(valB)
+        }
+    }
+    function getCellValue(row, index){ return $(row).children('td').eq(index).text() }
+   
+
+    function sortHeader() {
+        $('th').on('click', function() {
+            console.log('cliecked')
+            var table = $(this).parents('table').eq(0)
+            var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).index()))
+            this.asc = !this.asc
+            if (!this.asc){rows = rows.reverse()}
+            for (var i = 0; i < rows.length; i++){table.append(rows[i])}
+        })
+    }
+
+    function searchTable () {
+        $("#mySearch").on("keyup", function() {
+            
+            var value = $(this).val().toLowerCase();
+            console.log(value)
+            $("#moduleTableBody tr").filter(function() {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1) || $(this).toggle($(this).attr('id').toLowerCase.indexOf > -1)
+        });
+});
+    }
+    
+    $(document).ready(function() {
+        getFile()
+        sortHeader()
+        searchTable()
+    })
+</script>
+
+<script>
+</script>

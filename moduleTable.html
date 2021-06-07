@@ -9,6 +9,7 @@
     <label for="yearSelector">Year:</label>
 
     <select name="yearSelector" id="yearSelector">
+        <option value="0">All</option>
         <option value="1">First</option>
         <option value="2">Second</option>
         <option value="3">Third</option>
@@ -38,7 +39,7 @@
             //console.log(data)
             let rows = data.split('\n')
             //console.log(rows)
-            for (let i = 3; i < rows.length; i++) {
+            for (let i = 3; i < 20; i++) {
                 $('#testing').html(data)
                 cells = rows[i].split(',')
                 let markup =  "<tr id='"+cells[0]+'-'+cells[1]+"'><td>"+cells[0]+"</td><td>"+cells[1]+"</td><td>"+cells[2]+"</td><td>"+cells[6]+"</td></tr>"
@@ -58,7 +59,6 @@
 
     function sortHeader() {
         $('th').on('click', function() {
-            console.log('cliecked')
             var table = $(this).parents('table').eq(0)
             var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).index()))
             this.asc = !this.asc
@@ -71,17 +71,39 @@
         $("#mySearch").on("keyup", function() {
             
             var value = $(this).val().toLowerCase();
-            console.log(value)
+            let year = $('#yearSelector').val()
             $("#moduleTableBody tr").filter(function() {
-                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1) || $(this).toggle($(this).attr('id').toLowerCase.indexOf > -1)
+                $(this).toggle(
+                    ($(this).text().toLowerCase().indexOf(value) > -1) || $(this).toggle($(this).attr('id').toLowerCase.indexOf > -1) && $(this).attr('id').toLowerCase()[5] === value
+                )
         });
 });
+    }
+
+    function filterYear() {
+        $('#yearSelector').on('change', function() {
+            let value = $(this).val()
+            let search = $('#mySearch').val().toLowerCase();
+            if (value === '0') {
+                $("#moduleTableBody tr").filter(function() {
+                    $(this).toggle(true)
+                });
+            } else {
+                console.log(value)
+                $("#moduleTableBody tr").filter(function() {
+                    $(this).toggle(
+                        $(this).attr('id').toLowerCase()[5] === value && ($(this).text().toLowerCase().indexOf(value) > -1) || $(this).toggle($(this).attr('id').toLowerCase.indexOf > -1)
+                    )
+                })
+            }
+        })
     }
     
     $(document).ready(function() {
         getFile()
         sortHeader()
         searchTable()
+        filterYear()
     })
 </script>
 

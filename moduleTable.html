@@ -35,17 +35,17 @@
     <script>
         function getFile() {
             $.get(
-            'https://www.palatinate.org.uk/wp-content/uploadedImages/average-modules-spreadsheet.csv',
+            'https://www.palatinate.org.uk/wp-content/uploadedImages/2020-Results.csv',
             function(data) {
                 let rows = data.split('\n')
-             //console.log(rows)
-                for (let i = 2; i < rows.length; i++) {
-
+                for (let i = 1; i < rows.length; i++) {
+                //for (let i = 2; i < 20; i++) {
                     cells = rows[i].split('|')
-                //  console.log(cells)
-                    let markup =  "<tr id='"+cells[1]+"''><td>"+cells[0]+"</td><td>"+cells[1][5]+"</td><td>"+cells[5]+"</td><td>"
-                        +Math.round(parseFloat(cells[6])*100)+"%</td><td>"+Math.round(parseFloat(cells[7])*100)+"%</td></tr>"
-                    console.log(markup)
+                    modName = cells[0].split('-')
+                    let markup =  "<tr id='"+cells[0]+"''><td>"+modName[0]+"</td><td>"+modName[1][0]+
+                        "</td><td><a target='_blank' rel='noreferrer noopener' href='https://www.dur.ac.uk/faculty.handbook/module_description/?year=2021&module_code="+modName[0]+modName[1]+"'>"
+                            +cells[1]+"</a></td><td>"
+                        +cells[4]+"</td><td>"+cells[5]+"</td></tr>"
                     $('#moduleTableBody').append(markup)
                 }
             })
@@ -54,6 +54,9 @@
         function comparer(index) {
             return function(a, b) {
                 var valA = getCellValue(a, index), valB = getCellValue(b, index)
+                if (valA[valA.length-1] === '%') {
+                    return parseInt(valA.substring(0, valA.length-1)) - parseInt(valB.substring(0, valB.length-1))
+                }
                 return $.isNumeric(valA) && $.isNumeric(valB) ? valA - valB : valA.toString().localeCompare(valB)
             }
         }
@@ -62,6 +65,7 @@
 
         function sortHeader() {
             $('th').on('click', function() {
+                
                 var table = $(this).parents('table').eq(0)
                 var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).index()))
                 this.asc = !this.asc
@@ -72,14 +76,14 @@
 
         function searchTable () {
             $("#mySearch").on("keyup", function() {
-                
                 var search = $(this).val().toLowerCase();
+                //console.log($("#moduleTableBody tr"))
                 let year = $('#yearSelector').val()
                 $("#moduleTableBody tr").filter(function() {
                     $(this).toggle(
                         ($(this).text().toLowerCase().indexOf(search) > -1 || $(this).attr('id').toLowerCase().indexOf(search) > -1) 
                             && 
-                        $(this).attr('id').toLowerCase()[5] === year
+                        ($(this).attr('id').toLowerCase().split('-')[1][0] === year || year === '0')
                     )
             });
     });
@@ -89,17 +93,15 @@
             $('#yearSelector').on('change', function() {
                 let year = $(this).val()
                 let search = $('#mySearch').val().toLowerCase();
-                console.log(search)
+                console.log($("#moduleTableBody tr"))
                 if (year === '0') {
-                    console.log('zero')
                     $("#moduleTableBody tr").filter(function() {
                         $(this).toggle($(this).text().toLowerCase().indexOf(search) > -1 || $(this).attr('id').toLowerCase().indexOf(search) > -1)
                     });
                 } else {
-                    console.log(year)
                     $("#moduleTableBody tr").filter(function() {
                         $(this).toggle(
-                            $(this).attr('id').toLowerCase()[5] === year
+                            $(this).attr('id').toLowerCase().split('-')[1][0] === year
                                 && 
                             ($(this).text().toLowerCase().indexOf(search) > -1 || $(this).attr('id').toLowerCase().indexOf(search) > -1)
                         )

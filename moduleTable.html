@@ -15,6 +15,12 @@
             <option value="3">Third</option>
             <option value="4">Fourth</option>
         </select>
+        <label for='subjectSelector'>Subject</label>
+        <select name='subjectSelector' id='subjectSelector'>
+            
+            <option value="0">All</option>
+
+        </select>
         <input type="text" id="mySearch" placeholder="Search for modules/subjects..">
         <table id='myTable'>
             <tr class="header">
@@ -33,20 +39,119 @@
     </html>
 
     <script>
+        const subjects = {
+            'ANTH': 'Anthropology',
+            'ARAB': 'Arabic',
+            'ARCH': 'Archeology',
+            'BIOL': 'Biology',
+            'BUSI': 'Business',
+            'CFLS': 'Foreign Language',
+            'CHEM' : 'Chemistry',
+            'CHNS':'Chinese',
+            'CLAS':'Classics',
+            'COMB': 'Social Sciences',
+            'COMP':'Computer Science',
+            'ECON':'Economics',
+            'EDUC':'Education',
+            'EDUS':'English for Primary Teaching',
+            'ENGI':'Engineering',
+            'ENGL':'English',
+            'FOUD':'Foundation Year',
+            'FREN':'French',
+            'GEOG':'Geography',
+            'GEOL':'Geology',
+            'GERM':'German',
+            'HIST':'History',
+            'ITAL':'Italian',
+            'JPNS':'Japanese',
+            'LANG':'Linguistics',
+            'LAWS':'Law',
+            'MATH':'Mathematics',
+            'MELA':'Modern Languages and Cultures',
+            'MUSI':'Music',
+            'PHAR':'Medicine',
+            'PHIL':'Philosophy',
+            'PHYS': 'Physics',
+            'PPE':'PPE',
+            'PSYC':'Psychology',
+            'PSYS':'Applied Psychology',
+            'RUSS':'Russian',
+            'SGIA':'Politics and IR',
+            'SOCI':'Sociology',
+            'SPAN':'Spanish',
+            'SPRT':'Sports Science',
+            'THEO':'Theology',
+            'VISU':'Visual Arts'
+        }
+
         function getFile() {
             $.get(
             'https://www.palatinate.org.uk/wp-content/uploadedImages/2020-Results.csv',
             function(data) {
                 let rows = data.split('\n')
-                for (let i = 1; i < rows.length; i++) {
+                let html = ''
+                for (let i = 1; i < rows.length-1; i++) {
                 //for (let i = 2; i < 20; i++) {
                     cells = rows[i].split('|')
                     modName = cells[0].split('-')
-                    let markup =  "<tr id='"+cells[0]+"''><td>"+modName[0]+"</td><td>"+modName[1][0]+
+                    subjectName = (modName[0] === 'LAW') ? 'Law' : subjects[modName[0]]
+                    let markup =  "<tr id='"+cells[0]+"''><td>"+subjectName+"</td><td>"+modName[1][0]+
                         "</td><td><a target='_blank' rel='noreferrer noopener' href='https://www.dur.ac.uk/faculty.handbook/module_description/?year=2021&module_code="+modName[0]+modName[1]+"'>"
                             +cells[1]+"</a></td><td>"
                         +cells[4]+"</td><td>"+cells[5]+"</td></tr>"
-                    $('#moduleTableBody').append(markup)
+                    html += markup
+                }
+                $('#moduleTableBody').append(html)
+            })
+        }
+        function makeDropdown() {
+            let dropdown = $('#subjectSelector')
+            console.log(subjects['LAW'])
+            for (var key in subjects) {
+                let value = subjects[key]
+                dropdown.append('<option value="' + key + '">' + value+ '</option>')
+            }
+        }
+        
+        function dropdownWatcher() {
+            $('#subjectSelector').on('change', function() {
+                let year = $('#yearSelector').val()
+                let search = $('#mySearch').val().toLowerCase();
+                let subject = $(this).val()
+                if (subject === '0' || year === '0') {
+                    if (subject === '0' && year === '0') {
+                        $("#moduleTableBody tr").filter(function() {
+                            $(this).toggle($(this).text().toLowerCase().indexOf(search) > -1 || $(this).attr('id').toLowerCase().indexOf(search) > -1)
+                        });
+                    }
+                    else if (subject === '0' && year !== '0') {
+                        $("#moduleTableBody tr").filter(function() {
+                            $(this).toggle(
+                                $(this).attr('id').toLowerCase().split('-')[1][0] === year
+                                    && 
+                                ($(this).text().toLowerCase().indexOf(search) > -1 || $(this).attr('id').toLowerCase().indexOf(search) > -1)
+                            )
+                        })
+                    } 
+                    else if (subject !== '0' && year === '0'){
+                        $("#moduleTableBody tr").filter(function() {
+                            $(this).toggle(
+                                ($(this).text().toLowerCase().indexOf(search) > -1 || $(this).attr('id').toLowerCase().indexOf(search) > -1)
+                                    &&
+                                $(this).attr('id').toLowerCase().split('-')[0] === subject.toLowerCase()
+                            )
+                        })
+                    }
+                }   else {
+                    $("#moduleTableBody tr").filter(function() {
+                        $(this).toggle(
+                            $(this).attr('id').toLowerCase().split('-')[1][0] === year
+                                && 
+                            ($(this).text().toLowerCase().indexOf(search) > -1 || $(this).attr('id').toLowerCase().indexOf(search) > -1)
+                                &&
+                            $(this).attr('id').toLowerCase().split('-')[0] === subject.toLowerCase()
+                        )
+                    })
                 }
             })
         }
@@ -112,11 +217,10 @@
         
         $(document).ready(function() {
             getFile()
-            sortHeader()
+            makeDropdown()
+            dropdownWatcher()
+            //sortHeader()
             searchTable()
             filterYear()
         })
-    </script>
-
-    <script>
     </script>

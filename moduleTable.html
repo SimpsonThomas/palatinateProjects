@@ -1,226 +1,364 @@
-    <script src="https://code.jquery.com/jquery-2.1.0.min.js"></script>
+<script src="https://code.jquery.com/jquery-2.1.0.min.js"></script>
 
-    <style>
+<html>
+<center>
 
-    </style>
+    
+    <!--<label for="yearSelector">Year</label>-->
 
-    <html>
-    <center>
-        <label for="yearSelector">Year:</label>
+    <!---<select name="yearSelector" id="yearSelector">
+        <option value='2020'>2020</option>
+        <option value='2019'>2019</option>
+        <option value='2018'>2018</option>
+    </select>-->
 
-        <select name="yearSelector" id="yearSelector">
-            <option value="0">All</option>
-            <option value="1">First</option>
-            <option value="2">Second</option>
-            <option value="3">Third</option>
-            <option value="4">Fourth</option>
-        </select>
-        <label for='subjectSelector'>Subject</label>
-        <select name='subjectSelector' id='subjectSelector'>
-            
-            <option value="0">All</option>
+    <br/>
+    
+    <label for="levelSelector">Level:</label>
 
-        </select>
-        <input type="text" id="mySearch" placeholder="Search for modules/subjects..">
-        <table id='myTable'>
-            <tr class="header">
-                <th style='' id='subject' onClick>Subject</th>
-                <th>Level</th>
-                <th style=''>Module Title</th>
-                <th style=''>Average First (%)</th>
-                <th style=''>Average 2.1 (%)</th>
-            </tr>
-            
-            <tbody id='moduleTableBody'>
-
-            </tbody>
-        </table>
-    </center>
-    </html>
-
-    <script>
-        const subjects = {
-            'ANTH': 'Anthropology',
-            'ARAB': 'Arabic',
-            'ARCH': 'Archeology',
-            'BIOL': 'Biology',
-            'BUSI': 'Business',
-            'CFLS': 'Foreign Language',
-            'CHEM' : 'Chemistry',
-            'CHNS':'Chinese',
-            'CLAS':'Classics',
-            'COMB': 'Social Sciences',
-            'COMP':'Computer Science',
-            'ECON':'Economics',
-            'EDUC':'Education',
-            'EDUS':'English for Primary Teaching',
-            'ENGI':'Engineering',
-            'ENGL':'English',
-            'FOUD':'Foundation Year',
-            'FREN':'French',
-            'GEOG':'Geography',
-            'GEOL':'Geology',
-            'GERM':'German',
-            'HIST':'History',
-            'ITAL':'Italian',
-            'JPNS':'Japanese',
-            'LANG':'Linguistics',
-            'LAWS':'Law',
-            'MATH':'Mathematics',
-            'MELA':'Modern Languages and Cultures',
-            'MUSI':'Music',
-            'PHAR':'Medicine',
-            'PHIL':'Philosophy',
-            'PHYS': 'Physics',
-            'PPE':'PPE',
-            'PSYC':'Psychology',
-            'PSYS':'Applied Psychology',
-            'RUSS':'Russian',
-            'SGIA':'Politics and IR',
-            'SOCI':'Sociology',
-            'SPAN':'Spanish',
-            'SPRT':'Sports Science',
-            'THEO':'Theology',
-            'VISU':'Visual Arts'
-        }
-
-        function getFile() {
-            $.get(
-            'https://www.palatinate.org.uk/wp-content/uploadedImages/2020-Results.csv',
-            function(data) {
-                let rows = data.split('\n')
-                let html = ''
-                for (let i = 1; i < rows.length-1; i++) {
-                //for (let i = 2; i < 20; i++) {
-                    cells = rows[i].split('|')
-                    modName = cells[0].split('-')
-                    subjectName = (modName[0] === 'LAW') ? 'Law' : subjects[modName[0]]
-                    let markup =  "<tr id='"+cells[0]+"''><td>"+subjectName+"</td><td>"+modName[1][0]+
-                        "</td><td><a target='_blank' rel='noreferrer noopener' href='https://www.dur.ac.uk/faculty.handbook/module_description/?year=2021&module_code="+modName[0]+modName[1]+"'>"
-                            +cells[1]+"</a></td><td>"
-                        +cells[4]+"</td><td>"+cells[5]+"</td></tr>"
-                    html += markup
-                }
-                $('#moduleTableBody').append(html)
-            })
-        }
-        function makeDropdown() {
-            let dropdown = $('#subjectSelector')
-            console.log(subjects['LAW'])
-            for (var key in subjects) {
-                let value = subjects[key]
-                dropdown.append('<option value="' + key + '">' + value+ '</option>')
-            }
-        }
+    <select name="levelSelector" id="levelSelector">
+        <option value="0">All</option>
+        <option value="1">First</option>
+        <option value="2">Second</option>
+        <option value="3">Third</option>
+        <option value="4">Fourth</option>
+    </select>
+    <label for='subjectSelector'>Subject:</label>
+    <select name='subjectSelector' id='subjectSelector'>
         
-        function dropdownWatcher() {
-            $('#subjectSelector').on('change', function() {
-                let year = $('#yearSelector').val()
-                let search = $('#mySearch').val().toLowerCase();
-                let subject = $(this).val()
-                if (subject === '0' || year === '0') {
-                    if (subject === '0' && year === '0') {
-                        $("#moduleTableBody tr").filter(function() {
-                            $(this).toggle($(this).text().toLowerCase().indexOf(search) > -1 || $(this).attr('id').toLowerCase().indexOf(search) > -1)
-                        });
-                    }
-                    else if (subject === '0' && year !== '0') {
-                        $("#moduleTableBody tr").filter(function() {
-                            $(this).toggle(
-                                $(this).attr('id').toLowerCase().split('-')[1][0] === year
-                                    && 
-                                ($(this).text().toLowerCase().indexOf(search) > -1 || $(this).attr('id').toLowerCase().indexOf(search) > -1)
-                            )
-                        })
+        <option value="0">All</option>
+
+    </select>
+    <br/><br/>
+    <input type="text" id="mySearch" placeholder="Search for modules/subjects..">
+    <table id='myTable'>
+        <!---<tr class="header">
+            <td colspan="3"></td>
+            <th colspan="2" id='year2020'>2020</th>
+            <th colspan="2" id='year2019'>2019</th>
+            <th colspan="2" id='year2018'>2018</th>
+        </tr>--->
+        <tr class="header">
+            <th>Subject</th>
+            <th>Level</th>
+            <th>Module Title</th>
+            <th>Average First (%)</th>
+            <th>Average 2.1 (%)</th>
+        </tr>
+        
+        <tbody id='moduleTableBody'>
+
+        </tbody>
+    </table>
+</center>
+</html>
+
+<script>
+    const url2020 = 'https://www.palatinate.org.uk/wp-content/uploadedImages/2020-Results.csv'
+    const url2019 = 'https://www.palatinate.org.uk/wp-content/uploadedImages/2019-Results.csv'
+    const url2018 = 'https://www.palatinate.org.uk/wp-content/uploadedImages/2018-Results.csv'
+
+    const urlCombined = 'https://www.palatinate.org.uk/wp-content/uploadedImages/combinedResults.csv'
+    const subjects = {
+        'ANTH': 'Anthropology',
+        'ARAB': 'Arabic',
+        'ARCH': 'Archeology',
+        'BIOL': 'Biology',
+        'BUSI': 'Business',
+        'CFLS': 'Foreign Language',
+        'CHEM' : 'Chemistry',
+        'CHNS':'Chinese',
+        'CLAS':'Classics',
+        'COMB': 'Social Sciences',
+        'COMP':'Computer Science',
+        'ECON':'Economics',
+        'EDUC':'Education',
+        'EDUS':'English for Primary Teaching',
+        'ENGI':'Engineering',
+        'ENGL':'English',
+        'FOUD':'Foundation Year',
+        'FREN':'French',
+        'GEOG':'Geography',
+        'GEOL':'Geology',
+        'GERM':'German',
+        'HIST':'History',
+        'ITAL':'Italian',
+        'JPNS':'Japanese',
+        'LANG':'Linguistics',
+        'LAWS':'Law',
+        'MATH':'Mathematics',
+        'MELA':'Modern Languages and Cultures',
+        'MUSI':'Music',
+        'PHAR':'Medicine',
+        'PHIL':'Philosophy',
+        'PHYS': 'Physics',
+        'PPE':'PPE',
+        'PSYC':'Psychology',
+        'PSYS':'Applied Psychology',
+        'RUSS':'Russian',
+        'SGIA':'Politics and IR',
+        'SOCI':'Sociology',
+        'SPAN':'Spanish',
+        'SPRT':'Sports Science',
+        'THEO':'Theology',
+        'VISU':'Visual Arts'
+    }
+
+    function getFile() {
+        /*$.get(
+            urlCombined, function(data) {
+                //console.log('start')
+                let rows = data.split('\n')
+                //console.log(rows.length)
+                let html = ''
+                let modules = {}
+                for (let i = 3; i < 1177; i++) {
+                    let cells = rows[i].split('|')
+                    modules[cells[0]+'-'+cells[1]] = {name: cells[2],2018: [cells[5], cells[7]]}
+                }
+                for (let i = 1181; i < 2226; i++) {
+                    let cells = rows[i].split('|')
+                    mod = cells[0].split(',')
+                    modName = mod[0].substring(0, mod.length-4)+'-'+mod[0].substring(mod.length-4, mod.length)
+                    title = ''
+                    for (j=1; i<mod.length; i++) {
+                        title+=mod[j]
                     } 
-                    else if (subject !== '0' && year === '0'){
-                        $("#moduleTableBody tr").filter(function() {
-                            $(this).toggle(
-                                ($(this).text().toLowerCase().indexOf(search) > -1 || $(this).attr('id').toLowerCase().indexOf(search) > -1)
-                                    &&
-                                $(this).attr('id').toLowerCase().split('-')[0] === subject.toLowerCase()
-                            )
-                        })
+                    if (modName in modules) {
+                        modules[modName][2019] = [ cells[3], cells[4] ]
+                    } else {
+                    modules[modName] = {name: title, 2019: [ cells[3], cells[4] ] }
                     }
-                }   else {
+                for (let i = 2230; i < 3530; i++) {
+                    let cells = rows[i].split('|')
+                    modName = cells[0]
+                    if (modName in modules) {
+                        modules[modName][2020] = [cells[4], cells[5]]
+                    } else {
+                    modules[modName] = {name: cells[2],2020: [cells[4], cells[5]]}
+                }}
+                let codes = Object.keys(modules)
+                let html = ''
+                for (i in codes) {
+                    let code = codes[i]
+                    let module = modules[code]
+                    let subjectName = subjects[code.split('-')[0]]
+                    
+                    let markup2020 = (2020 in module) ? "<td>"+module[2020][0]+"</td><td>"+module[2020][1]+"</td></tr>" : "<td colspan='2'>Not offered this year</td>"
+                    let markup2019 = (2019 in module) ? "<td>"+module[2019][0]+"</td><td>"+module[2019][1]+"</td></tr>" : "<td colspan='2'>Not offered this year</td>"
+                    let markup2018 = (2018 in module) ? "<td>"+module[2018][0]+"</td><td>"+module[2018][1]+"</td></tr>" : "<td colspan='2'>Not offered this year</td>"
+                    let markup = "<tr id='"+code+"''><td>"+subjectName+"</td><td>"+code+
+                    "</td><td><a target='_blank' rel='noreferrer noopener' href='https://www.dur.ac.uk/faculty.handbook/module_description/?year=2021&module_code="
+                        +code+"'>"+module.name+"</a></td>"
+                        +markup2020
+                        //+markup2019
+                        //+markup2018
+                        
+                    html += markup
+                    }
+                    //console.log(html)
+                    
+                    //$('#moduleTableBody').append(html)
+                }
+            })
+            }*/
+        
+        $.get(
+        url2020,
+        function(data) {
+            let rows = data.split('\n')
+            let html = ''
+            for (let i = 1; i < rows.length-1; i++) {
+            //for (let i = 2; i < 20; i++) {
+                cells = rows[i].split('|')
+                modName = cells[0].split('-')
+                subjectName = (modName[0] === 'LAW') ? 'Law' : subjects[modName[0]]
+                let markup =  "<tr id='"+cells[0]+"''><td>"+subjectName+"</td><td>"+modName[1][0]+
+                    "</td><td><a target='_blank' rel='noreferrer noopener' href='https://www.dur.ac.uk/faculty.handbook/module_description/?year=2021&module_code="+modName[0]+modName[1]+"'>"
+                        +cells[1]+"</a></td><td>"
+                    +cells[4]+"</td><td>"+cells[5]+"</td></tr>"
+                html += markup
+            }
+            $('#moduleTableBody').append(html)
+        })
+    }
+    function makeDropdown() {
+        let dropdown = $('#subjectSelector')
+        for (var key in subjects) {
+            let value = subjects[key]
+            dropdown.append('<option value="' + key + '">' + value+ '</option>')
+        }
+    }
+    
+    function dropdownWatcher() {
+        $('#subjectSelector').on('change', function() {
+            let level = $('#levelSelector').val()
+            let search = $('#mySearch').val().toLowerCase();
+            let subject = ($(this).val() === 'LAWS') ? 'LAW' : $(this).val()
+            if (subject === '0' || level === '0') {
+                if (subject === '0' && level === '0') {
+                    $("#moduleTableBody tr").filter(function() {
+                        $(this).toggle($(this).text().toLowerCase().indexOf(search) > -1 || $(this).attr('id').toLowerCase().indexOf(search) > -1)
+                    });
+                }
+                else if (subject === '0' && level !== '0') {
                     $("#moduleTableBody tr").filter(function() {
                         $(this).toggle(
-                            $(this).attr('id').toLowerCase().split('-')[1][0] === year
+                            $(this).attr('id').toLowerCase().split('-')[1][0] === level
                                 && 
+                            ($(this).text().toLowerCase().indexOf(search) > -1 || $(this).attr('id').toLowerCase().indexOf(search) > -1)
+                        )
+                    })
+                } 
+                else if (subject !== '0' && level === '0'){
+                    $("#moduleTableBody tr").filter(function() {
+                        $(this).toggle(
                             ($(this).text().toLowerCase().indexOf(search) > -1 || $(this).attr('id').toLowerCase().indexOf(search) > -1)
                                 &&
                             $(this).attr('id').toLowerCase().split('-')[0] === subject.toLowerCase()
                         )
                     })
                 }
-            })
-        }
-
-        function comparer(index) {
-            return function(a, b) {
-                var valA = getCellValue(a, index), valB = getCellValue(b, index)
-                if (valA[valA.length-1] === '%') {
-                    return parseInt(valA.substring(0, valA.length-1)) - parseInt(valB.substring(0, valB.length-1))
-                }
-                return $.isNumeric(valA) && $.isNumeric(valB) ? valA - valB : valA.toString().localeCompare(valB)
-            }
-        }
-        function getCellValue(row, index){ return $(row).children('td').eq(index).text() }
-    
-
-        function sortHeader() {
-            $('th').on('click', function() {
-                
-                var table = $(this).parents('table').eq(0)
-                var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).index()))
-                this.asc = !this.asc
-                if (!this.asc){rows = rows.reverse()}
-                for (var i = 0; i < rows.length; i++){table.append(rows[i])}
-            })
-        }
-
-        function searchTable () {
-            $("#mySearch").on("keyup", function() {
-                var search = $(this).val().toLowerCase();
-                //console.log($("#moduleTableBody tr"))
-                let year = $('#yearSelector').val()
+            }   else {
                 $("#moduleTableBody tr").filter(function() {
                     $(this).toggle(
-                        ($(this).text().toLowerCase().indexOf(search) > -1 || $(this).attr('id').toLowerCase().indexOf(search) > -1) 
+                        $(this).attr('id').toLowerCase().split('-')[1][0] === level
                             && 
-                        ($(this).attr('id').toLowerCase().split('-')[1][0] === year || year === '0')
+                        ($(this).text().toLowerCase().indexOf(search) > -1 || $(this).attr('id').toLowerCase().indexOf(search) > -1)
+                            &&
+                        $(this).attr('id').toLowerCase().split('-')[0] === subject.toLowerCase()
                     )
-            });
-    });
-        }
+                })
+            }
+        })
+    }
 
-        function filterYear() {
-            $('#yearSelector').on('change', function() {
-                let year = $(this).val()
-                let search = $('#mySearch').val().toLowerCase();
-                console.log($("#moduleTableBody tr"))
-                if (year === '0') {
+    function comparer(index) {
+        return function(a, b) {
+            var valA = getCellValue(a, index), valB = getCellValue(b, index)
+            if (valA[valA.length-1] === '%') {
+                return parseInt(valA.substring(0, valA.length-1)) - parseInt(valB.substring(0, valB.length-1))
+            }
+            return $.isNumeric(valA) && $.isNumeric(valB) ? valA - valB : valA.toString().localeCompare(valB)
+        }
+    }
+    function getCellValue(row, index){ return $(row).children('td').eq(index).text() }
+
+
+    function sortHeader() {
+        $('th').on('click', function() {
+            
+            var table = $(this).parents('table').eq(0)
+            var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).index()))
+            this.asc = !this.asc
+            if (!this.asc){rows = rows.reverse()}
+            for (var i = 0; i < rows.length; i++){table.append(rows[i])}
+        })
+    }
+
+    function searchTable () {
+        $("#mySearch").on("keyup", function() {
+            var search = $(this).val().toLowerCase();
+            let level = $('#levelSelector').val()
+            $("#moduleTableBody tr").filter(function() {
+                $(this).toggle(
+                    ($(this).text().toLowerCase().indexOf(search) > -1 || $(this).attr('id').toLowerCase().indexOf(search) > -1) 
+                        && 
+                    ($(this).attr('id').toLowerCase().split('-')[1][0] === level || level === '0')
+                )
+        });
+});
+    }
+
+    function filterlevel() {
+        $('#levelSelector').on('change', function() {
+            let level = $(this).val()
+            let search = $('#mySearch').val().toLowerCase();
+            let sub = $('#subjectSelector').val().toLowerCase();
+            let subject = (sub === 'LAWS') ? 'LAW' : sub
+            if (subject === '0' || level === '0') {
+                if (subject === '0' && level === '0') {
                     $("#moduleTableBody tr").filter(function() {
                         $(this).toggle($(this).text().toLowerCase().indexOf(search) > -1 || $(this).attr('id').toLowerCase().indexOf(search) > -1)
                     });
-                } else {
+                }
+                else if (subject === '0' && level !== '0') {
                     $("#moduleTableBody tr").filter(function() {
                         $(this).toggle(
-                            $(this).attr('id').toLowerCase().split('-')[1][0] === year
+                            $(this).attr('id').toLowerCase().split('-')[1][0] === level
                                 && 
                             ($(this).text().toLowerCase().indexOf(search) > -1 || $(this).attr('id').toLowerCase().indexOf(search) > -1)
                         )
                     })
+                } 
+                else if (subject !== '0' && level === '0'){
+                    $("#moduleTableBody tr").filter(function() {
+                        $(this).toggle(
+                            ($(this).text().toLowerCase().indexOf(search) > -1 || $(this).attr('id').toLowerCase().indexOf(search) > -1)
+                                &&
+                            $(this).attr('id').toLowerCase().split('-')[0] === subject.toLowerCase()
+                        )
+                    })
                 }
-            })
-        }
-        
-        $(document).ready(function() {
-            getFile()
-            makeDropdown()
-            dropdownWatcher()
-            //sortHeader()
-            searchTable()
-            filterYear()
+            }   else {
+                $("#moduleTableBody tr").filter(function() {
+                    $(this).toggle(
+                        $(this).attr('id').toLowerCase().split('-')[1][0] === level
+                            && 
+                        ($(this).text().toLowerCase().indexOf(search) > -1 || $(this).attr('id').toLowerCase().indexOf(search) > -1)
+                            &&
+                        $(this).attr('id').toLowerCase().split('-')[0] === subject.toLowerCase()
+                    )
+                })
+            }
         })
-    </script>
+    }
+    
+    /*function changeYear() {
+        $('#yearSelector').on('change', function() {
+            let year = $(this).val()
+            if (year === '2020') {
+                $('#year2020').show()
+                $('#year2019').hide()
+                $('#year2018').hide()
+                $('#moduleTableBody td:nth-child(4)').show()
+                $('#moduleTableBody td:nth-child(5)').show()
+                $('#moduleTableBody td:nth-child(6)').hide()
+                $('#moduleTableBody td:nth-child(7)').hide()
+                $('#moduleTableBody td:nth-child(8)').hide()
+                $('#moduleTableBody td:nth-child(9)').hide()
+            }
+            else if (year === '2019') {
+                $('#year2020').hide()
+                $('#year2019').show()
+                $('#year2018').hide()
+                $('#moduleTableBody td:nth-child(4)').hide()
+                $('#moduleTableBody td:nth-child(5)').hide()
+                $('#moduleTableBody td:nth-child(6)').show()
+                $('#moduleTableBody td:nth-child(7)').show()
+                $('#moduleTableBody td:nth-child(8)').hide()
+                $('#moduleTableBody td:nth-child(9)').hide()
+            } else  if (year === '2018') {
+                $('#year2020').hide()
+                $('#year2019').hide()
+                $('#year2018').show()
+                $('#moduleTableBody td:nth-child(4)').hide()
+                $('#moduleTableBody td:nth-child(5)').hide()
+                $('#moduleTableBody td:nth-child(6)').hide()
+                $('#moduleTableBody td:nth-child(7)').hide()
+                $('#moduleTableBody td:nth-child(8)').show()
+                $('#moduleTableBody td:nth-child(9)').show()
+            }
+        })
+    }*/
+
+    $(document).ready(function() {
+        getFile()
+        makeDropdown()
+        dropdownWatcher()
+        //sortHeader()
+        searchTable()
+        filterlevel()
+        //changeYear()
+    })
+</script>

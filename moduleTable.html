@@ -1,16 +1,33 @@
 <script src="https://code.jquery.com/jquery-2.1.0.min.js"></script>
 
+<style>
+    .hideCol {
+        display: none;
+    }
+
+    @media only screen and (max-width: 600px) {
+        .hideSmall {
+            display: none
+        }
+
+        
+        .modCol {
+            max-width: 40vw
+        }
+    }
+</style>
+
 <html>
 <center>
 
     
-    <!--<label for="yearSelector">Year</label>-->
+    <label for="yearSelector">Year</label>
 
-    <!---<select name="yearSelector" id="yearSelector">
+    <select name="yearSelector" id="yearSelector">
         <option value='2020'>2020</option>
         <option value='2019'>2019</option>
         <option value='2018'>2018</option>
-    </select>-->
+    </select>
 
     <br/>
     
@@ -31,22 +48,20 @@
     </select>
     <br/><br/>
     <input type="text" id="mySearch" placeholder="Search for modules/subjects..">
-    <table id='myTable'>
-        <!---<tr class="header">
-            <td colspan="3"></td>
-            <th colspan="2" id='year2020'>2020</th>
-            <th colspan="2" id='year2019'>2019</th>
-            <th colspan="2" id='year2018'>2018</th>
-        </tr>--->
+    <table id='myTable' class='tableDiv'>
         <tr class="header">
-            <th>Subject</th>
-            <th>Level</th>
-            <th>Module Title</th>
+            <th class='hideSmall'>Subject</th>
+            <th class='hideSmall'>Level</th>
+            <th class='modCol'>Module Title</th>
             <th>Average First (%)</th>
             <th>Average 2.1 (%)</th>
+            <th class='hideCol'>19</th>
+            <th class='hideCol'>19</th>
+            <th class='hideCol'>18</th>
+            <th class='hideCol'>18</th>
         </tr>
         
-        <tbody id='moduleTableBody'>
+        <tbody id='moduleTableBody' class='tableDiv'>
 
         </tbody>
     </table>
@@ -89,6 +104,7 @@
         'MATH':'Mathematics',
         'MELA':'Modern Languages and Cultures',
         'MUSI':'Music',
+        'NSCI':'Natural Science',
         'PHAR':'Medicine',
         'PHIL':'Philosophy',
         'PHYS': 'Physics',
@@ -104,84 +120,73 @@
         'VISU':'Visual Arts'
     }
 
+    function correctSubject(subCode) {
+        let lang = ['MLAN', 'MELA', 'MLAS']
+        let business = ['BUSI', 'BUSS', 'ECOS']
+        if (lang.includes(subCode)) return 'MELA'
+        else if (business.includes(subCode)) return 'BUSI'
+        else return subCode
+    }
+
     function getFile() {
-        /*$.get(
+        $.get(
             urlCombined, function(data) {
-                //console.log('start')
                 let rows = data.split('\n')
-                //console.log(rows.length)
                 let html = ''
                 let modules = {}
+                console.log(rows[1177])
                 for (let i = 3; i < 1177; i++) {
                     let cells = rows[i].split('|')
-                    modules[cells[0]+'-'+cells[1]] = {name: cells[2],2018: [cells[5], cells[7]]}
+                    modules[correctSubject(cells[0])+'-'+cells[1]] = {name: cells[2],2018: [cells[6], cells[8]], level:cells[1][0]}
                 }
-                for (let i = 1181; i < 2226; i++) {
+                for (let i = 1181; i < 2325; i++) {
                     let cells = rows[i].split('|')
                     mod = cells[0].split(',')
-                    modName = mod[0].substring(0, mod.length-4)+'-'+mod[0].substring(mod.length-4, mod.length)
+                    modName = mod[0].substring(0, mod[0].length-4)+'-'+mod[0].substring(mod[0].length-4, mod[0].length)
                     title = ''
-                    for (j=1; i<mod.length; i++) {
+                    for (j=1; j<mod.length; j++) {
                         title+=mod[j]
-                    } 
+                    }
                     if (modName in modules) {
                         modules[modName][2019] = [ cells[3], cells[4] ]
                     } else {
-                    modules[modName] = {name: title, 2019: [ cells[3], cells[4] ] }
+                    modules[modName] = {name: title, 2019: [ cells[3], cells[4] ], level: mod[0][mod[0].length-4] }
                     }
-                for (let i = 2230; i < 3530; i++) {
+                }
+                for (let i = 2331; i < 3530; i++) {
                     let cells = rows[i].split('|')
-                    modName = cells[0]
+                    modCodeSeperated = cells[0].split('-')
+                    modName = correctSubject(modCodeSeperated[0])+'-'+modCodeSeperated[1]
                     if (modName in modules) {
                         modules[modName][2020] = [cells[4], cells[5]]
                     } else {
-                    modules[modName] = {name: cells[2],2020: [cells[4], cells[5]]}
-                }}
+                        modules[modName] = {name: cells[1],2020: [cells[4], cells[5]], level : modName[modName.length-4]}
+                    }
+                }
                 let codes = Object.keys(modules)
-                let html = ''
                 for (i in codes) {
                     let code = codes[i]
                     let module = modules[code]
-                    let subjectName = subjects[code.split('-')[0]]
+                    let codeSeperated = code.split('-')
+                    let subCode = codeSeperated[0]
+                    let subjectName = (subCode === 'LAW') ? 'Law' : subjects[subCode]
                     
-                    let markup2020 = (2020 in module) ? "<td>"+module[2020][0]+"</td><td>"+module[2020][1]+"</td></tr>" : "<td colspan='2'>Not offered this year</td>"
-                    let markup2019 = (2019 in module) ? "<td>"+module[2019][0]+"</td><td>"+module[2019][1]+"</td></tr>" : "<td colspan='2'>Not offered this year</td>"
-                    let markup2018 = (2018 in module) ? "<td>"+module[2018][0]+"</td><td>"+module[2018][1]+"</td></tr>" : "<td colspan='2'>Not offered this year</td>"
-                    let markup = "<tr id='"+code+"''><td>"+subjectName+"</td><td>"+code+
-                    "</td><td><a target='_blank' rel='noreferrer noopener' href='https://www.dur.ac.uk/faculty.handbook/module_description/?year=2021&module_code="
-                        +code+"'>"+module.name+"</a></td>"
+                    let markup2020 = (2020 in module) ? "<td>"+module[2020][0]+"</td><td>"+module[2020][1]+"</td>" : "<td>N/A</td><td>N/A</td>"
+                    let markup2019 = (2019 in module) ? "<td class='hideCol'>"+module[2019][0]+"</td><td class='hideCol'>"+module[2019][1]+"</td>" : "<td class='hideCol'>N/A</td><td class='hideCol'>N/A</td>"
+                    let markup2018 = (2018 in module) ? "<td class='hideCol'>"+module[2018][0]+"</td><td class='hideCol'>"+module[2018][1]+"</td>" : "<td class='hideCol'>N/A</td><td class='hideCol'>N/A</td>"
+                    let markup = "<tr id='"+code+"''><td class='hideSmall'>"+subjectName+"</td><td class='hideSmall'>"+module.level+
+                    "</td><td class='modCol'><a target='_blank' rel='noreferrer noopener' href='https://www.dur.ac.uk/faculty.handbook/module_description/?year=2021&module_code="
+                        +codeSeperated[0]+codeSeperated[1]+"'>"+module.name+"</a></td>"
                         +markup2020
-                        //+markup2019
-                        //+markup2018
+                        +markup2019
+                        +markup2018
                         
                     html += markup
-                    }
-                    //console.log(html)
-                    
-                    //$('#moduleTableBody').append(html)
                 }
+                
+                $('#moduleTableBody').append(html)
             })
-            }*/
-        
-        $.get(
-        url2020,
-        function(data) {
-            let rows = data.split('\n')
-            let html = ''
-            for (let i = 1; i < rows.length-1; i++) {
-            //for (let i = 2; i < 20; i++) {
-                cells = rows[i].split('|')
-                modName = cells[0].split('-')
-                subjectName = (modName[0] === 'LAW') ? 'Law' : subjects[modName[0]]
-                let markup =  "<tr id='"+cells[0]+"''><td>"+subjectName+"</td><td>"+modName[1][0]+
-                    "</td><td><a target='_blank' rel='noreferrer noopener' href='https://www.dur.ac.uk/faculty.handbook/module_description/?year=2021&module_code="+modName[0]+modName[1]+"'>"
-                        +cells[1]+"</a></td><td>"
-                    +cells[4]+"</td><td>"+cells[5]+"</td></tr>"
-                html += markup
-            }
-            $('#moduleTableBody').append(html)
-        })
-    }
+        }
     function makeDropdown() {
         let dropdown = $('#subjectSelector')
         for (var key in subjects) {
@@ -314,13 +319,10 @@
         })
     }
     
-    /*function changeYear() {
+    function changeYear() {
         $('#yearSelector').on('change', function() {
             let year = $(this).val()
             if (year === '2020') {
-                $('#year2020').show()
-                $('#year2019').hide()
-                $('#year2018').hide()
                 $('#moduleTableBody td:nth-child(4)').show()
                 $('#moduleTableBody td:nth-child(5)').show()
                 $('#moduleTableBody td:nth-child(6)').hide()
@@ -329,9 +331,6 @@
                 $('#moduleTableBody td:nth-child(9)').hide()
             }
             else if (year === '2019') {
-                $('#year2020').hide()
-                $('#year2019').show()
-                $('#year2018').hide()
                 $('#moduleTableBody td:nth-child(4)').hide()
                 $('#moduleTableBody td:nth-child(5)').hide()
                 $('#moduleTableBody td:nth-child(6)').show()
@@ -339,9 +338,6 @@
                 $('#moduleTableBody td:nth-child(8)').hide()
                 $('#moduleTableBody td:nth-child(9)').hide()
             } else  if (year === '2018') {
-                $('#year2020').hide()
-                $('#year2019').hide()
-                $('#year2018').show()
                 $('#moduleTableBody td:nth-child(4)').hide()
                 $('#moduleTableBody td:nth-child(5)').hide()
                 $('#moduleTableBody td:nth-child(6)').hide()
@@ -350,7 +346,7 @@
                 $('#moduleTableBody td:nth-child(9)').show()
             }
         })
-    }*/
+    }
 
     $(document).ready(function() {
         getFile()
@@ -359,6 +355,6 @@
         //sortHeader()
         searchTable()
         filterlevel()
-        //changeYear()
+        changeYear()
     })
 </script>

@@ -55,8 +55,10 @@
             <th class='hideSmall'>Subject</th>
             <th class='hideSmall'>Level</th>
             <th class='modCol'>Module Title</th>
-            <th>Average First (%)</th>
-            <th>Average 2.1 (%)</th>
+            
+            <th id="averageMark">Average Mark</th>
+            <th>Percentage First (%)</th>
+            <th>Percentage 2.1 (%)</th>
             
             <th class='hideCol'>20</th>
             <th class='hideCol'>20</th>
@@ -112,7 +114,8 @@
         'LANG':'Linguistics',
         'LAWS':'Law',
         'MATH':'Mathematics',
-        'MELA':'Modern Languages and Cultures',
+        'MELA':'Modern Languages and Cultures (old)',
+        'MLAC':'Modern Languages and Cultures',
         'MUSI':'Music',
         'NSCI':'Natural Science',
         'PHAR':'Medicine',
@@ -4812,7 +4815,7 @@ VISU|2041|Thinking Through Art Objects|25|70|63%|29%|8%|0%
         let modules = {}
         for (let i = 3; i < 1176; i++) {
             let cells = rows[i].split('|')
-            modules[cells[0]+'-'+cells[1]] = {name: cells[2],2018: [cells[6], cells[8]], level:cells[1][0]}
+            modules[cells[0]+'-'+cells[1]] = {name: cells[2],2018: [cells[4],cells[6], cells[8]], level:cells[1][0]}
         }
         for (let i = 1180; i < 2325; i++) {
             let cells = rows[i].split('|')
@@ -4823,9 +4826,9 @@ VISU|2041|Thinking Through Art Objects|25|70|63%|29%|8%|0%
                 title+=mod[j]
             }
             if (modName in modules) {
-                modules[modName][2019] = [ cells[3], cells[4] ]
+                modules[modName][2019] = [ cells[1],cells[3], cells[4] ]
             } else {
-            modules[modName] = {name: title, 2019: [ cells[3], cells[4] ], level: mod[0][mod[0].length-4] }
+            modules[modName] = {name: title, 2019: [ cells[1],cells[3], cells[4] ], level: mod[0][mod[0].length-4] }
             }
         }
         for (let i = 2331; i < 3529; i++) {
@@ -4833,18 +4836,18 @@ VISU|2041|Thinking Through Art Objects|25|70|63%|29%|8%|0%
             modCodeSeperated = cells[0].split('-')
             modName = modCodeSeperated[0]+'-'+modCodeSeperated[1]
             if (modName in modules) {
-                modules[modName][2020] = [cells[4], cells[5]]
+                modules[modName][2020] = [cells[2],cells[4], cells[5]]
             } else {
-                modules[modName] = {name: cells[1],2020: [cells[4], cells[5]], level : modName[modName.length-4]}
+                modules[modName] = {name: cells[1],2020: [cells[2],cells[4], cells[5]], level : modName[modName.length-4]}
             }
         }
         for (let i = 3535; i < 4673; i++) {
             let cells = rows[i].split('|')
             modName = cells[0]+'-'+cells[1]
             if (modName in modules) {
-                modules[modName][2022] = [cells[5], cells[6]]
+                modules[modName][2022] = [cells[4],cells[5], cells[6]]
             } else {
-                modules[modName] = {name: cells[2],2022: [cells[5], cells[6]], level : modName[modName.length-4]}
+                modules[modName] = {name: cells[2],2022: [cells[4],cells[5], cells[6]], level : modName[modName.length-4]}
             }
         }
         let codes = Object.keys(modules)
@@ -4856,10 +4859,13 @@ VISU|2041|Thinking Through Art Objects|25|70|63%|29%|8%|0%
             let codeSeperated = code.split('-')
             let subCode = codeSeperated[0]
             let subjectName = (subCode === 'LAW') ? 'Law' : subjects[subCode]
-            let markup2022 = (2022 in module) ? "<td>"+module[2022][0]+"</td><td>"+module[2022][1]+"</td>" : "<td>N/A</td><td>N/A</td>"
-            let markup2020 = (2020 in module) ? "<td class='hideCol'>"+module[2020][0]+"</td><td class='hideCol'>"+module[2020][1]+"</td>" : "<td class='hideCol'>N/A</td><td class='hideCol'>N/A</td>"
-            let markup2019 = (2019 in module) ? "<td class='hideCol'>"+module[2019][0]+"</td><td class='hideCol'>"+module[2019][1]+"</td>" : "<td class='hideCol'>N/A</td><td class='hideCol'>N/A</td>"
-            let markup2018 = (2018 in module) ? "<td class='hideCol'>"+module[2018][0]+"</td><td class='hideCol'>"+module[2018][1]+"</td>" : "<td class='hideCol'>N/A</td><td class='hideCol'>N/A</td>"
+            let markup2022 = (2022 in module) ? "<td>"+module[2022][0]+"</td><td>"+module[2022][1]+"</td><td>"+module[2022][2]+"</td>" : "<td>N/A</td><td>N/A</td><td>N/A</td>"
+            let markup2020 = (2020 in module) ? "<td class='hideCol'>"+module[2020][0]+"</td><td class='hideCol'>"+module[2020][1]+"</td><td class='hideCol'>"+module[2020][2]+"</td>" 
+                : "<td class='hideCol'>N/A</td><td class='hideCol'>N/A</td><td class='hideCol'>N/A</td>"
+            let markup2019 = (2019 in module) ? "<td class='hideCol'>"+module[2019][0]+"</td><td class='hideCol'>"+module[2019][1]+"</td><td class='hideCol'>"+module[2019][2]+"</td>" 
+             : "<td class='hideCol'>N/A</td><td class='hideCol'>N/A</td><td class='hideCol'>N/A</td>"
+            let markup2018 = (2018 in module) ? "<td class='hideCol'>"+module[2018][0]+"</td><td class='hideCol'>"+module[2018][1]+"</td><td class='hideCol'>"+module[2018][2]+"</td>"  
+            : "<td class='hideCol'>N/A</td><td class='hideCol'>N/A</td><td class='hideCol'>N/A</td>"
             let markup = "<tr id='"+code+"''><td class='hideSmall'>"+subjectName+"</td><td class='hideSmall'>"+module.level+
             "</td><td class='modCol'><a target='_blank' rel='noreferrer noopener' href='https://www.dur.ac.uk/faculty.handbook/module_description/?year=2021&module_code="
                 +codeSeperated[0]+codeSeperated[1]+"'>"+module.name+"</a></td>"
@@ -4951,11 +4957,15 @@ VISU|2041|Thinking Through Art Objects|25|70|63%|29%|8%|0%
         $("#mySearch").on("keyup", function() {
             var search = $(this).val().toLowerCase();
             let level = $('#levelSelector').val()
+            let sub = $('#subjectSelector').val().toLowerCase();
+            let subject = (sub === 'LAWS') ? 'LAW' : sub
             $("#moduleTableBody tr").filter(function() {
                 $(this).toggle(
                     ($(this).text().toLowerCase().indexOf(search) > -1 || $(this).attr('id').toLowerCase().indexOf(search) > -1) 
                         && 
                     ($(this).attr('id').toLowerCase().split('-')[1][0] === level || level === '0')
+                     &&
+                    ($(this).attr('id').toLowerCase().split('-')[0] === subject.toLowerCase() || subject === '0')
                 )
         });
 });
@@ -5007,44 +5017,79 @@ VISU|2041|Thinking Through Art Objects|25|70|63%|29%|8%|0%
     
     function changeYear() {
         $('#yearSelector').on('change', function() {
+            console.log('here')
             let year = $(this).val()
             if (year === '2022') {
                 $('#moduleTableBody td:nth-child(4)').show()
                 $('#moduleTableBody td:nth-child(5)').show()
-                $('#moduleTableBody td:nth-child(6)').hide()
+                $('#moduleTableBody td:nth-child(6)').show()
+
                 $('#moduleTableBody td:nth-child(7)').hide()
                 $('#moduleTableBody td:nth-child(8)').hide()
                 $('#moduleTableBody td:nth-child(9)').hide()
+
                 $('#moduleTableBody td:nth-child(10)').hide()
                 $('#moduleTableBody td:nth-child(11)').hide()
+                $('#moduleTableBody td:nth-child(12)').hide()
+
+                $('#moduleTableBody td:nth-child(13)').hide()
+                $('#moduleTableBody td:nth-child(14)').hide()
+                $('#moduleTableBody td:nth-child(15)').hide()
+
+
             }
             else if (year === '2020') {
                 $('#moduleTableBody td:nth-child(4)').hide()
                 $('#moduleTableBody td:nth-child(5)').hide()
-                $('#moduleTableBody td:nth-child(6)').show()
+                $('#moduleTableBody td:nth-child(6)').hide()
+
                 $('#moduleTableBody td:nth-child(7)').show()
-                $('#moduleTableBody td:nth-child(8)').hide()
-                $('#moduleTableBody td:nth-child(9)').hide()
+                $('#moduleTableBody td:nth-child(8)').show()
+                $('#moduleTableBody td:nth-child(9)').show()
+
                 $('#moduleTableBody td:nth-child(10)').hide()
                 $('#moduleTableBody td:nth-child(11)').hide()
+                $('#moduleTableBody td:nth-child(12)').hide()
+                
+                $('#moduleTableBody td:nth-child(13)').hide()
+                $('#moduleTableBody td:nth-child(14)').hide()
+                $('#moduleTableBody td:nth-child(15)').hide()
+
             } else  if (year === '2019') {
                 $('#moduleTableBody td:nth-child(4)').hide()
                 $('#moduleTableBody td:nth-child(5)').hide()
                 $('#moduleTableBody td:nth-child(6)').hide()
+
                 $('#moduleTableBody td:nth-child(7)').hide()
-                $('#moduleTableBody td:nth-child(8)').show()
-                $('#moduleTableBody td:nth-child(9)').show()
-                $('#moduleTableBody td:nth-child(10)').hide()
-                $('#moduleTableBody td:nth-child(11)').hide()
+                $('#moduleTableBody td:nth-child(8)').hide()
+                $('#moduleTableBody td:nth-child(9)').hide()
+
+                $('#moduleTableBody td:nth-child(10)').show()
+                $('#moduleTableBody td:nth-child(11)').show()
+                $('#moduleTableBody td:nth-child(12)').show()
+                
+                $('#moduleTableBody td:nth-child(13)').hide()
+                $('#moduleTableBody td:nth-child(14)').hide()
+                $('#moduleTableBody td:nth-child(15)').hide()
+                
+
             } else  if (year === '2018') {
                 $('#moduleTableBody td:nth-child(4)').hide()
                 $('#moduleTableBody td:nth-child(5)').hide()
                 $('#moduleTableBody td:nth-child(6)').hide()
+
                 $('#moduleTableBody td:nth-child(7)').hide()
                 $('#moduleTableBody td:nth-child(8)').hide()
                 $('#moduleTableBody td:nth-child(9)').hide()
-                $('#moduleTableBody td:nth-child(10)').show()
-                $('#moduleTableBody td:nth-child(11)').show()
+
+                $('#moduleTableBody td:nth-child(10)').hide()
+                $('#moduleTableBody td:nth-child(11)').hide()
+                $('#moduleTableBody td:nth-child(12)').hide()
+
+                $('#moduleTableBody td:nth-child(13)').show()
+                $('#moduleTableBody td:nth-child(14)').show()
+                $('#moduleTableBody td:nth-child(15)').show()
+                
             }
         })
     }
